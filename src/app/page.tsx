@@ -4,14 +4,29 @@ import Link from 'next/link';
 import PlaceholderImage from './placeholder';
 import { motion } from 'framer-motion';
 import { Clock, Star, Utensils } from 'lucide-react';
+import ImageWithLoading from '@/components/ImageWithLoading';
+import { useState } from 'react';
 
 export default function Home() {
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+
+  const handleImageError = (itemId: number) => {
+    setFailedImages(prev => new Set([...prev, itemId]));
+  };
+
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <PlaceholderImage width={1920} height={1080} />
+          <ImageWithLoading
+            src="/images/hero.jpg"
+            alt="Restaurant hero image"
+            className="object-cover"
+            priority
+            loading="eager"
+            placeholderColor="bg-gray-800"
+          />
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         </div>
         <motion.div 
@@ -96,22 +111,55 @@ export default function Home() {
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[1, 2, 3].map((item, index) => (
+          {[
+            {
+              id: 1,
+              name: 'Signature Pasta',
+              description: 'Handmade pasta with truffle cream sauce and wild mushrooms',
+              image: '/images/food/featured/pasta.jpg',
+              price: '$24.99'
+            },
+            {
+              id: 2,
+              name: 'Grilled Salmon',
+              description: 'Fresh Atlantic salmon with citrus butter sauce and asparagus',
+              image: '/images/food/featured/salmon.jpg',
+              price: '$28.99'
+            },
+            {
+              id: 3,
+              name: 'Chocolate Soufflé',
+              description: 'Warm chocolate soufflé with vanilla ice cream',
+              image: '/images/food/featured/souffle.jpg',
+              price: '$12.99'
+            }
+          ].map((item, index) => (
             <motion.div
-              key={item}
+              key={item.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all"
             >
               <div className="relative h-64 overflow-hidden">
-                <PlaceholderImage width={400} height={256} />
+                <ImageWithLoading
+                  src={item.image}
+                  alt={item.name}
+                  className="transition-transform duration-300 group-hover:scale-110"
+                  priority={index === 0}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  placeholderColor={failedImages.has(item.id) ? 'bg-gray-100' : 'bg-gray-200'}
+                  onError={() => handleImageError(item.id)}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="p-8">
-                <h3 className="text-2xl font-semibold mb-3">Signature Dish {item}</h3>
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-2xl font-semibold">{item.name}</h3>
+                  <span className="text-orange-500 font-semibold text-lg">{item.price}</span>
+                </div>
                 <p className="text-gray-600 mb-6">
-                  A delicious combination of fresh ingredients and expert preparation.
+                  {item.description}
                 </p>
                 <Link
                   href="/menu"
