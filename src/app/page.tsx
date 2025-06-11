@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import PlaceholderImage from './placeholder';
 import { motion } from 'framer-motion';
 import { Clock, Star, Utensils } from 'lucide-react';
 import ImageWithLoading from '@/components/ImageWithLoading';

@@ -167,24 +167,19 @@ type SortOption = 'name' | 'price' | 'rating';
 type FilterOption = 'vegetarian' | 'glutenFree' | 'spicy';
 
 export default function Menu() {
-  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [activeFilters, setActiveFilters] = useState<Set<FilterOption>>(new Set());
-  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set(menuCategories.map(cat => cat.id)));
-
-  const handleImageError = (itemId: number) => {
-    setFailedImages(prev => new Set([...prev, itemId]));
-  };
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['starters', 'main-courses']));
 
   const toggleCategory = (categoryId: number) => {
     setExpandedCategories(prev => {
       const next = new Set(prev);
-      if (next.has(categoryId)) {
-        next.delete(categoryId);
+      if (next.has(categoryId.toString())) {
+        next.delete(categoryId.toString());
       } else {
-        next.add(categoryId);
+        next.add(categoryId.toString());
       }
       return next;
     });
@@ -327,11 +322,11 @@ export default function Menu() {
                     className="flex items-center justify-between w-full mb-4"
                   >
                     <h2 className="text-2xl font-semibold">{category.name}</h2>
-                    {expandedCategories.has(category.id) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    {expandedCategories.has(category.id.toString()) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </button>
                   
                   <AnimatePresence>
-                    {expandedCategories.has(category.id) && (
+                    {expandedCategories.has(category.id.toString()) && (
                       <motion.ul
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
@@ -357,7 +352,6 @@ export default function Menu() {
                                   sizes="(max-width: 768px) 100vw, 192px"
                                   className="object-cover"
                                   priority={item.id <= 3}
-                                  onError={() => handleImageError(item.id)}
                                 />
                               </div>
                               <div className="p-4 flex-1">

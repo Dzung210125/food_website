@@ -2,19 +2,38 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Edit2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Edit2, Camera, X } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [profileImage, setProfileImage] = useState(session?.user?.image);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
   }, [status, router]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setProfileImage(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileImage(null);
+  };
 
   if (status === 'loading') {
     return (
@@ -36,18 +55,37 @@ export default function ProfilePage() {
           {/* Profile Header */}
           <div className="relative h-32 bg-orange-500">
             <div className="absolute -bottom-16 left-8">
-              <div className="h-32 w-32 rounded-full border-4 border-white bg-white overflow-hidden">
-                {session?.user?.image ? (
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name || 'Profile'}
-                    className="h-full w-full object-cover"
-                  />
+              <div className="relative w-32 h-32 mx-auto mb-6">
+                {profileImage ? (
+                  <div className="relative w-full h-full rounded-full overflow-hidden">
+                    <Image
+                      src={profileImage}
+                      alt="Profile"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 128px, 128px"
+                    />
+                    <button
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                 ) : (
-                  <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                    <User className="h-16 w-16 text-gray-400" />
+                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                    <Camera size={32} className="text-gray-400" />
                   </div>
                 )}
+                <label className="absolute bottom-0 right-0 p-2 bg-orange-500 text-white rounded-full cursor-pointer hover:bg-orange-600 transition-colors">
+                  <Camera size={20} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
               </div>
             </div>
           </div>
