@@ -11,6 +11,9 @@ interface ImageWithLoadingProps {
   loading?: 'lazy' | 'eager';
   placeholderColor?: string;
   onError?: () => void;
+  colorCode?: string;
+  expand?: number;
+  dataSrc?: string;
 }
 
 export default function ImageWithLoading({
@@ -20,7 +23,10 @@ export default function ImageWithLoading({
   priority = false,
   loading = 'lazy',
   placeholderColor = 'bg-gray-200',
-  onError
+  onError,
+  colorCode,
+  expand = 300,
+  dataSrc
 }: ImageWithLoadingProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -66,6 +72,9 @@ export default function ImageWithLoading({
         fill
         priority={priority}
         loading={loading}
+        data-src={dataSrc}
+        data-color-code={colorCode}
+        data-expand={expand}
         className={`
           object-cover
           transition-opacity duration-300

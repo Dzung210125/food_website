@@ -1,303 +1,88 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Search, Menu, X, ChevronDown, Globe, Phone, Clock } from 'lucide-react';
-import SearchBar from './SearchBar';
-
-const menuCategories = [
-  { name: 'Appetizers', href: '/menu#appetizers' },
-  { name: 'Main Courses', href: '/menu#main-courses' },
-  { name: 'Desserts', href: '/menu#desserts' },
-  { name: 'Beverages', href: '/menu#beverages' },
-];
-
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Español' },
-  { code: 'fr', name: 'Français' },
-];
+import styles from './Header.module.css';
 
 export default function Header() {
-  const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const menuRef = useRef<HTMLDivElement>(null);
-  const languageRef = useRef<HTMLDivElement>(null);
-  const [searchResults] = useState<string[]>([]);
-
-  const isActive = (path: string) => {
-    return pathname === path ? 'text-orange-500' : 'text-gray-600 hover:text-orange-500';
-  };
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-      if (languageRef.current && !languageRef.current.contains(event.target as Node)) {
-        setIsLanguageOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSearch = (query: string) => {
-    // TODO: Implement actual search logic here
-    // This is a placeholder that you can replace with your actual search implementation
-    console.log('Searching for:', query);
-  };
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* Top Bar */}
-      <div className="bg-gray-100 py-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center text-sm text-gray-600">
-            <div className="flex items-center space-x-4">
-              <a href="tel:+1234567890" className="flex items-center hover:text-orange-500">
-                <Phone size={16} className="mr-1" />
-                (123) 456-7890
-              </a>
-              <div className="flex items-center">
-                <Clock size={16} className="mr-1" />
-                Mon-Sun: 11:00 AM - 10:00 PM
-              </div>
-            </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <a href="#" className="hover:text-orange-500">Order Online</a>
-              <a href="#" className="hover:text-orange-500">Gift Cards</a>
-            </div>
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <nav className={styles.mainNav}>
+          <div className={styles.logo}>
+            <Link href="/" data-category="navi" data-label="header-home">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 40" width="90" height="40">
+                <title>UNIQLO home</title>
+                <path fill="#f00" d="M50 0h40v40H50zM0 0h40v40H0z" />
+                <g fill="#fff">
+                  <path d="M79.48 5.47h2.53v12.64h-2.53zM63.47 13.9a4.21 4.21 0 0 1-8.42 0V5.47h2.53v8.43a1.68 1.68 0 1 0 3.36 0V5.47h2.53zm11.79 20.63h-8.42V21.89h2.53V32h5.89v2.53zm0-16.42h-2.53l-3.36-7.22v7.22h-2.53V5.47h2.53l3.36 7.22V5.47h2.53v12.64zm-16 3.78a4.21 4.21 0 0 0-4.21 4.22v4.21a4.21 4.21 0 0 0 4.21 4.21 4.34 4.34 0 0 0 .82-.07l.86 2.6h2.53l-1.25-3.75a4.2 4.2 0 0 0 1.25-3v-4.2a4.21 4.21 0 0 0-4.21-4.22m1.68 8.43a1.68 1.68 0 1 1-3.36 0v-4.21a1.68 1.68 0 1 1 3.36 0zm19.8-8.43a4.22 4.22 0 0 0-4.22 4.22v4.21a4.21 4.21 0 0 0 8.42 0v-4.21a4.21 4.21 0 0 0-4.21-4.22m1.68 8.43a1.68 1.68 0 0 1-3.37 0v-4.21a1.68 1.68 0 0 1 3.37 0zM22.74 15.16H34.1v2.52H22.74zM24 5.47h8.84V8H24zm-9.26 0H7.15V8h5.06v7.16H5.9v2.52h11.36v-2.52h-2.52V5.47zm8 16.84v12.22H34.1V22.31zM31.57 32h-6.31v-7.16h6.31zM7.15 22.31l-1.28 6.12h2.52l.76-3.59h5.07L12.73 32H5.14l-.51 2.53h10.11l2.52-12.22H7.15z" />
+                </g>
+              </svg>
+            </Link>
           </div>
-        </div>
+        </nav>
+
+        <nav className={styles.utilityNav}>
+          <div className={styles.utilityIcons}>
+            <button 
+              className={styles.iconButton} 
+              data-category="navi" 
+              data-label="navi-open"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              aria-label="Search"
+            >
+              <svg width="32" height="32" viewBox="0 0 32 32" focusable="false" role="presentation">
+                <path d="M27.8276 28.5752L21.7378 22.4863C19.979 23.9619 17.7129 24.8516 15.2427 24.8516C9.66309 24.8516 5.12402 20.3125 5.12402 14.7334C5.12402 9.1543 9.66309 4.61523 15.2427 4.61523C20.8223 4.61523 25.3613 9.1543 25.3613 14.7334C25.3613 17.124 24.5283 19.3232 23.1367 21.0566L29.2417 27.1611L27.8276 28.5752ZM15.2427 6.61523C10.7661 6.61523 7.12402 10.2568 7.12402 14.7334C7.12402 19.21 10.7661 22.8516 15.2427 22.8516C19.7192 22.8516 23.3613 19.21 23.3613 14.7334C23.3613 10.2568 19.7192 6.61523 15.2427 6.61523Z" />
+              </svg>
+            </button>
+
+            <button className={styles.iconButton} aria-label="header account">
+              <svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M12 3.44995C7.28599 3.44995 3.45099 7.28495 3.45099 12C3.45099 16.715 7.28599 20.5499 12.001 20.5499C16.716 20.5499 20.55 16.715 20.55 12C20.55 7.28495 16.715 3.44995 12 3.44995ZM15.487 11.5H12.499V9.27595C13.345 9.22695 14.166 9.05695 14.945 8.77195C15.255 9.63795 15.441 10.555 15.487 11.501V11.5ZM9.05299 8.77095C9.83199 9.05595 10.653 9.22695 11.499 9.27595V11.501H8.51099C8.55699 10.554 8.74299 9.63795 9.05299 8.77195V8.77095ZM11.499 8.17595C10.805 8.12995 10.132 7.98895 9.49099 7.75995C9.98899 6.75995 10.66 5.84595 11.499 5.06595V8.17595ZM8.51299 12.5H11.499V14.725C10.659 14.773 9.84299 14.942 9.06899 15.224C8.75499 14.36 8.56399 13.446 8.51299 12.5ZM11.499 15.824V18.885C10.672 18.116 10.008 17.217 9.51199 16.233C10.147 16.008 10.813 15.87 11.499 15.824ZM12.499 15.824C13.185 15.869 13.851 16.007 14.486 16.232C13.99 17.215 13.326 18.115 12.499 18.884V15.824ZM12.499 14.724V12.499H15.484C15.433 13.444 15.242 14.358 14.928 15.222C14.154 14.94 13.34 14.772 12.499 14.724ZM12.499 8.17495V5.06695C13.338 5.84595 14.009 6.75995 14.507 7.75995C13.866 7.98895 13.193 8.12895 12.499 8.17495ZM13.545 4.71195C14.8 4.97795 15.936 5.56395 16.872 6.37595C16.425 6.76395 15.941 7.09695 15.425 7.36495C14.947 6.39395 14.314 5.50195 13.545 4.71195ZM8.57399 7.36395C8.05799 7.09595 7.57399 6.76495 7.12699 6.37695C8.06199 5.56495 9.19799 4.97995 10.452 4.71295C9.68299 5.50195 9.05099 6.39295 8.57399 7.36395ZM8.14099 8.37495C7.77999 9.36495 7.55699 10.413 7.50999 11.499H4.57499C4.68599 9.84595 5.33299 8.33995 6.34999 7.15595C6.89899 7.64195 7.49999 8.05095 8.14099 8.37595V8.37495ZM7.51199 12.499C7.56699 13.571 7.79899 14.617 8.16899 15.609C7.51699 15.936 6.90799 16.35 6.35099 16.843C5.33299 15.658 4.68599 14.152 4.57499 12.499H7.51299H7.51199ZM8.60699 16.618C9.09699 17.604 9.74199 18.509 10.521 19.301C9.23899 19.042 8.07899 18.449 7.12699 17.622C7.58399 17.226 8.07799 16.889 8.60699 16.618ZM15.39 16.618C15.919 16.889 16.415 17.225 16.872 17.622C15.919 18.449 14.758 19.043 13.476 19.302C14.255 18.509 14.9 17.604 15.39 16.618ZM15.829 15.609C16.199 14.617 16.431 13.571 16.485 12.499H19.424C19.313 14.152 18.666 15.658 17.649 16.843C17.091 16.35 16.481 15.937 15.829 15.609ZM16.488 11.499C16.44 10.414 16.218 9.36595 15.857 8.37695C16.499 8.05195 17.098 7.64195 17.648 7.15595C18.665 8.34095 19.313 9.84695 19.424 11.5H16.488V11.499Z" />
+              </svg>
+            </button>
+
+            <button className={styles.iconButton} data-category="navi" aria-label="header favorite" data-label="header-favorite">
+              <svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M12 20.47L4.689 12.97C3.657 11.938 3.086 10.594 3.086 9.19205C3.086 6.08805 5.439 3.74805 8.56 3.74805C10.018 3.74805 11.235 4.53205 12 5.19205C12.766 4.53205 13.983 3.74805 15.441 3.74805C18.561 3.74805 20.914 6.08905 20.914 9.19205C20.914 10.594 20.343 11.938 19.306 12.975L12 20.47ZM8.56 4.94705C6.123 4.94705 4.287 6.77205 4.287 9.19205C4.287 10.274 4.733 11.316 5.544 12.128L12.001 18.752L18.453 12.133C19.269 11.318 19.715 10.275 19.715 9.19305C19.715 6.77305 17.878 4.94805 15.442 4.94805C14.108 4.94805 12.98 5.88005 12.426 6.43505L12.001 6.86105L11.576 6.43505C11.022 5.87905 9.895 4.94705 8.56 4.94705Z" />
+              </svg>
+            </button>
+
+            <Link href="/cart" className={styles.iconButton} data-category="navi" aria-label="header cart" data-label="header-cart">
+              <svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path fillRule="evenodd" clipRule="evenodd" d="M7.04381 6.56598L7.03981 3.50598H2.00781V4.70498H5.84181L5.85581 15.459H18.7528L20.9928 6.56498L7.04381 6.56598ZM17.8178 14.26H7.05481L7.04681 7.76498H19.4538L17.8188 14.26H17.8178ZM16.9688 20.502C17.7972 20.502 18.4688 19.8304 18.4688 19.002C18.4688 18.1736 17.7972 17.502 16.9688 17.502C16.1403 17.502 15.4688 18.1736 15.4688 19.002C15.4688 19.8304 16.1403 20.502 16.9688 20.502ZM8.95312 19.002C8.95312 19.8304 8.28155 20.502 7.45312 20.502C6.6247 20.502 5.95312 19.8304 5.95312 19.002C5.95312 18.1736 6.6247 17.502 7.45312 17.502C8.28155 17.502 8.95312 18.1736 8.95312 19.002Z" />
+              </svg>
+              <div className={styles.cartCount}>
+                <span>0</span>
+              </div>
+            </Link>
+          </div>
+        </nav>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <Link href="/" className="flex-shrink-0 flex items-center">
-                <span className="text-2xl font-bold text-orange-500">Foodie</span>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link
-                href="/"
-                className={`${isActive('/')} transition-colors duration-200 font-medium`}
-              >
-                Home
-              </Link>
-              
-              {/* Menu Dropdown */}
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className={`${isActive('/menu')} flex items-center space-x-1 transition-colors duration-200 font-medium`}
-                >
-                  <span>Menu</span>
-                  <ChevronDown size={16} className={`transform transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                    <div className="py-1">
-                      {menuCategories.map((category) => (
-                        <Link
-                          key={category.name}
-                          href={category.href}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          {category.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Link
-                href="/about"
-                className={`${isActive('/about')} transition-colors duration-200 font-medium`}
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className={`${isActive('/contact')} transition-colors duration-200 font-medium`}
-              >
-                Contact
-              </Link>
-            </div>
-
-            {/* Desktop Right Section */}
-            <div className="hidden md:flex items-center space-x-4">
-              {/* Language Selector */}
-              <div className="relative" ref={languageRef}>
-                <button
-                  onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                  className="flex items-center space-x-1 text-gray-600 hover:text-orange-500"
-                >
-                  <Globe size={20} />
-                  <span className="text-sm">{languages.find(lang => lang.code === selectedLanguage)?.name}</span>
-                  <ChevronDown size={16} className={`transform transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isLanguageOpen && (
-                  <div className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                    <div className="py-1">
-                      {languages.map((language) => (
-                        <button
-                          key={language.code}
-                          onClick={() => {
-                            setSelectedLanguage(language.code);
-                            setIsLanguageOpen(false);
-                          }}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          {language.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Search Button */}
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-600 hover:text-orange-500 transition-colors"
-                aria-label="Search"
-              >
-                <Search size={20} />
-              </button>
-
-              {/* Reservation Button */}
-              <Link
-                href="/contact"
-                className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-colors font-medium"
-              >
-                Make Reservation
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-4">
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-600 hover:text-orange-500 transition-colors"
-                aria-label="Search"
-              >
-                <Search size={20} />
-              </button>
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 text-gray-600 hover:text-orange-500 transition-colors"
-                aria-label="Toggle menu"
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
+      {isSearchOpen && (
+        <div className={styles.searchOverlay}>
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              placeholder="Search for products..."
+              className={styles.searchInput}
+              autoFocus
+            />
+            <button 
+              className={styles.closeButton}
+              onClick={() => setIsSearchOpen(false)}
+              aria-label="Close search"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" fill="currentColor" />
+              </svg>
+            </button>
           </div>
-
-          {/* Search Bar */}
-          {isSearchOpen && (
-            <div className="py-4 border-t">
-              <div className="max-w-xl mx-auto">
-                <SearchBar onSearch={handleSearch} />
-                {searchResults.length > 0 && (
-                  <div className="mt-2 bg-white rounded-md shadow-lg">
-                    {searchResults.map((result, index) => (
-                      <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        {result}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden border-t">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <Link
-                  href="/"
-                  className={`${isActive('/')} block px-3 py-2 rounded-md text-base font-medium`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                
-                {/* Mobile Menu Categories */}
-                <div className="px-3 py-2">
-                  <div className="font-medium text-gray-900 mb-2">Menu Categories</div>
-                  {menuCategories.map((category) => (
-                    <Link
-                      key={category.name}
-                      href={category.href}
-                      className="block px-3 py-2 text-gray-600 hover:text-orange-500"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-
-                <Link
-                  href="/about"
-                  className={`${isActive('/about')} block px-3 py-2 rounded-md text-base font-medium`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  About
-                </Link>
-                <Link
-                  href="/contact"
-                  className={`${isActive('/contact')} block px-3 py-2 rounded-md text-base font-medium`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Contact
-                </Link>
-
-                {/* Mobile Language Selector */}
-                <div className="px-3 py-2">
-                  <div className="font-medium text-gray-900 mb-2">Language</div>
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        setSelectedLanguage(language.code);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 text-gray-600 hover:text-orange-500"
-                    >
-                      {language.name}
-                    </button>
-                  ))}
-                </div>
-
-                <Link
-                  href="/contact"
-                  className="block px-3 py-2 mt-4 bg-orange-500 text-white rounded-md text-center font-medium hover:bg-orange-600 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Make Reservation
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
-      </nav>
+      )}
     </header>
   );
 } 

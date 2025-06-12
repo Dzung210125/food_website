@@ -1,0 +1,144 @@
+.fr-bff-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1176px;
+  margin: 0 auto;
+}
+
+.fr-bff-product {
+  position: relative;
+}
+
+.fr-bff-product_inner {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.fr-bff-product_imgWrapper {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.u-imgAdjustBox {
+  position: relative;
+  width: 100%;
+  padding-top: 133.33%; /* 3:4 aspect ratio */
+}
+
+.u-imgAdjustBox_inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fr-bff-product_colorChipsAndFavorite {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0.5rem;
+}
+
+.fr-bff-product_colorChips_container {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.fr-bff-product_colorChips {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.25rem;
+}
+
+.fr-bff-product_colorChip {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid #dadada;
+}
+
+.fr-bff-product_colorChip_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fr-bff-favorite {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #1b1b1b;
+}
+
+.fr-bff-favorite.is-active {
+  color: #e60012;
+}
+
+.fr-bff-favorite_icon {
+  width: 24px;
+  height: 24px;
+}
+
+.fr-bff-product_content {
+  padding: 0.5rem 0;
+}
+
+.fr-bff-product_gender {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.fr-bff-product_name {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.fr-bff-product_futureExhibition {
+  font-size: 0.875rem;
+  color: #e60012;
+  margin-bottom: 0.25rem;
+}
+
+.fr-bff-product_price {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.fr-bff-product_sizes {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.u-Hover:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .fr-bff-products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .fr-bff-products {
+    grid-template-columns: 1fr;
+  }
+} 

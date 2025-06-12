@@ -5,9 +5,30 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 255, 255, 255;
+  --media-enhancements-content-min-width: 2.5rem;
+  --media-enhancements-max-height-min-width: 2.5rem;
+  --button-icon-light-hover-color: #6a6a6a;
+  --collection-list-horizontal-margin-padding-reset: 0;
+  --collection-list-horizontal-offset: 0.5rem;
+  --collection-list-border-style: 1px solid #DADADA;
+  --collection-list-margin-padding-reset: 0;
+  --collection-list-border-reset: 0;
+}
+
+* {
+  box-sizing: inherit;
+  padding: 0;
+  margin: 0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: #1b1b1b;
   background: rgb(var(--background-rgb));
+  font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, 'Noto Sans', Roboto, Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', '\30D2\30E9\30AE\30CE\89D2\30B4   Pro W3', 'Noto Sans CJK JP', Osaka, Meiryo, '\30E1\30A4\30EA\30AA', 'MS PGothic', '\FF2D\FF33   \FF30\30B4\30B7\30C3\30AF', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif;
+  font-weight: normal;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  text-size-adjust: 100%;
+  background-repeat: no-repeat;
+  display: block;
 }

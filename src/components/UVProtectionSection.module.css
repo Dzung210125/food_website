@@ -1,0 +1,27 @@
+.uvProtectionSection {
+  width: 100%;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.uvImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .uvProtectionSection {
+    margin: 1rem 0;
+  }
+  
+  .imageContainer {
+    aspect-ratio: 4/3;
+  }
+} 
