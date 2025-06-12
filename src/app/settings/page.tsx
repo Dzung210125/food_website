@@ -2,97 +2,47 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Save, AlertCircle } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Lock, Bell, Globe } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
-interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-}
-
-export default function SettingsPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+// Dynamically import the settings content to ensure it only runs on client side
+const SettingsContent = dynamic(() => Promise.resolve(({ session }: { session: any }) => {
   const [formData, setFormData] = useState({
-    name: session?.user?.name || '',
-    email: session?.user?.email || '',
-    phone: '0700000000',
-    address: '123 Food Street, Cuisine City',
+    name: session.user?.name || '',
+    email: session.user?.email || '',
+    phone: '',
+    address: '',
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    } else if (formData.name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    }
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
-    }
-
-    // Phone validation
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^[0-9]{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Phone number must be 10 digits';
-    }
-
-    // Address validation
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
-    } else if (formData.address.length < 5) {
-      newErrors.address = 'Address must be at least 5 characters';
-    }
-
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.phone) newErrors.phone = 'Phone is required';
+    if (!formData.address) newErrors.address = 'Address is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // TODO: Implement profile update logic
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
-      setIsEditing(false);
-      setErrors({});
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-    } finally {
-      setIsSubmitting(false);
+    if (validateForm()) {
+      // Handle form submission
+      console.log('Form submitted:', formData);
     }
   };
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -104,176 +54,152 @@ export default function SettingsPage() {
           className="bg-white rounded-2xl shadow-xl overflow-hidden"
         >
           <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-              <button
-                onClick={() => {
-                  setIsEditing(!isEditing);
-                  setErrors({});
-                }}
-                className="px-4 py-2 text-sm font-medium text-orange-500 hover:text-orange-600"
-              >
-                {isEditing ? 'Cancel' : 'Edit Profile'}
-              </button>
-            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-8">Account Settings</h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex items-start gap-4">
-                <User className="h-5 w-5 text-gray-400 mt-2" />
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => {
-                      setFormData({ ...formData, name: e.target.value });
-                      if (errors.name) {
-                        setErrors({ ...errors, name: undefined });
-                      }
-                    }}
-                    disabled={!isEditing}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-500 ${
-                      errors.name ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      {errors.name}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <Mail className="h-5 w-5 text-gray-400 mt-2" />
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => {
-                      setFormData({ ...formData, email: e.target.value });
-                      if (errors.email) {
-                        setErrors({ ...errors, email: undefined });
-                      }
-                    }}
-                    disabled={!isEditing}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-500 ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <Phone className="h-5 w-5 text-gray-400 mt-2" />
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => {
-                      setFormData({ ...formData, phone: e.target.value });
-                      if (errors.phone) {
-                        setErrors({ ...errors, phone: undefined });
-                      }
-                    }}
-                    disabled={!isEditing}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-500 ${
-                      errors.phone ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.phone && (
-                    <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      {errors.phone}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <MapPin className="h-5 w-5 text-gray-400 mt-2" />
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <textarea
-                    value={formData.address}
-                    onChange={(e) => {
-                      setFormData({ ...formData, address: e.target.value });
-                      if (errors.address) {
-                        setErrors({ ...errors, address: undefined });
-                      }
-                    }}
-                    disabled={!isEditing}
-                    rows={3}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-500 ${
-                      errors.address ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.address && (
-                    <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="h-4 w-4" />
-                      {errors.address}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {isEditing && (
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-5 w-5" />
-                        Save Changes
-                      </>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Personal Information */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`block w-full pl-10 pr-3 py-2 border ${
+                          errors.name ? 'border-red-500' : 'border-gray-300'
+                        } rounded-lg focus:ring-orange-500 focus:border-orange-500`}
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                    {errors.name && (
+                      <p className="mt-1 text-sm text-red-500">{errors.name}</p>
                     )}
-                  </button>
-                </div>
-              )}
-            </form>
+                  </div>
 
-            {/* Security Settings */}
-            <div className="mt-12 pt-8 border-t">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Security</h2>
-              <div className="space-y-4">
-                <button className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:border-orange-500 transition-colors">
-                  <p className="font-medium text-gray-900">Change Password</p>
-                  <p className="text-sm text-gray-500">Update your password regularly to keep your account secure</p>
-                </button>
-                <button className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:border-orange-500 transition-colors">
-                  <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                  <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`block w-full pl-10 pr-3 py-2 border ${
+                          errors.email ? 'border-red-500' : 'border-gray-300'
+                        } rounded-lg focus:ring-orange-500 focus:border-orange-500`}
+                        placeholder="Enter your email"
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={`block w-full pl-10 pr-3 py-2 border ${
+                          errors.phone ? 'border-red-500' : 'border-gray-300'
+                        } rounded-lg focus:ring-orange-500 focus:border-orange-500`}
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MapPin className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className={`block w-full pl-10 pr-3 py-2 border ${
+                          errors.address ? 'border-red-500' : 'border-gray-300'
+                        } rounded-lg focus:ring-orange-500 focus:border-orange-500`}
+                        placeholder="Enter your address"
+                      />
+                    </div>
+                    {errors.address && (
+                      <p className="mt-1 text-sm text-red-500">{errors.address}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Save Changes
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </motion.div>
       </div>
     </div>
   );
+}), { ssr: false });
+
+// Wrap the page component with a client-side only wrapper
+const SettingsPageWrapper = dynamic(() => Promise.resolve(() => {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+  const router = useRouter();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  return <SettingsContent session={session} />;
+}), { ssr: false });
+
+export default function SettingsPage() {
+  return <SettingsPageWrapper />;
 } 

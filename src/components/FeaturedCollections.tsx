@@ -11,46 +11,19 @@ import styles from './FeaturedCollections.module.css';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-interface FeaturedItem {
-  id: string;
-  title: string;
-  imageUrl: string;
-  link: string;
-  alt: string;
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  colors: string[];
 }
 
-const featuredItems: FeaturedItem[] = [
-  {
-    id: '1',
-    title: 'UV PROTECTION COLLECTION',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/res88dcf8754870f840288709c2f224e6acfr.jpg',
-    link: '/women/uv-protection',
-    alt: 'UV PROTECTION COLLECTION'
-  },
-  {
-    id: '2',
-    title: 'BRA TOP COLLECTION',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/rese983c9379a0aeb1983b423354e064e8ffr.jpg',
-    link: '/women/t-shirts-sweat-and-fleece/bra-tops',
-    alt: 'BRA TOP COLLECTION'
-  },
-  {
-    id: '3',
-    title: 'LINEN COLLECTION',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/res91a6abc50bafc6bb4671db753d81ae25fr.jpg',
-    link: '/women/linen',
-    alt: 'LINEN COLLECTION'
-  },
-  {
-    id: '4',
-    title: 'T-SHIRTS COLLECTION',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/res6c199cfa84175feb7659cad1c205cd9efr.jpg',
-    link: '/women/t-shirts-sweat-and-fleece/t-shirts',
-    alt: 'T-SHIRTS COLLECTION'
-  }
-];
+interface FeaturedCollectionsProps {
+  products: Product[];
+}
 
-export default function FeaturedCollections() {
+export default function FeaturedCollections({ products }: FeaturedCollectionsProps) {
   const navigationPrevRef = useRef<HTMLDivElement>(null);
   const navigationNextRef = useRef<HTMLDivElement>(null);
 
@@ -78,26 +51,32 @@ export default function FeaturedCollections() {
             }}
             className={styles.swiper}
           >
-            {featuredItems.map((item) => (
-              <SwiperSlide key={item.id} className={styles.slide}>
+            {products.map((product) => (
+              <SwiperSlide key={product.id} className={styles.slide}>
                 <div>
                   <Link 
-                    href={item.link} 
+                    href={`/products/${product.id}`}
                     className={styles.link}
-                    data-category="common_feature_banner"
-                    data-label={`feature_${item.id}`}
+                    data-category="featured_product"
+                    data-label={`product_${product.id}`}
                   >
                     <div className={styles.imageWrapper}>
                       <Image
-                        src={item.imageUrl}
-                        alt={item.alt}
+                        src={product.image}
+                        alt={product.name}
                         width={195}
                         height={260}
                         className={styles.image}
                         data-expand="300"
                       />
                     </div>
-                    <p className={styles.itemTitle}>{item.title}</p>
+                    <p className={styles.itemTitle}>{product.name}</p>
+                    <p className={styles.price}>{product.price}</p>
+                    <div className={styles.colors}>
+                      {product.colors.map((color, index) => (
+                        <span key={index} className={styles.color}>{color}</span>
+                      ))}
+                    </div>
                   </Link>
                 </div>
               </SwiperSlide>

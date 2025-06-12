@@ -6,17 +6,17 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Edit2, Camera, X } from 'lucide-react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 
-export default function ProfilePage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [profileImage, setProfileImage] = useState(session?.user?.image);
+// Dynamically import the profile content to ensure it only runs on client side
+const ProfileContent = dynamic(() => Promise.resolve(({ session }: { session: any }) => {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (session?.user?.image) {
+      setProfileImage(session.user.image);
     }
-  }, [status, router]);
+  }, [session]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -34,14 +34,6 @@ export default function ProfilePage() {
   const handleRemoveImage = () => {
     setProfileImage(null);
   };
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -95,9 +87,9 @@ export default function ProfilePage() {
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {session?.user?.name || 'User Name'}
+                  {session.user?.name || 'User Name'}
                 </h1>
-                <p className="text-gray-600">{session?.user?.email}</p>
+                <p className="text-gray-600">{session.user?.email}</p>
               </div>
               <button className="p-2 text-gray-400 hover:text-orange-500 transition-colors">
                 <Edit2 className="h-5 w-5" />
@@ -110,7 +102,7 @@ export default function ProfilePage() {
                 <Mail className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-500">Email</p>
-                  <p className="text-gray-900">{session?.user?.email}</p>
+                  <p className="text-gray-900">{session.user?.email}</p>
                 </div>
               </div>
 
@@ -158,4 +150,33 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}), { ssr: false });
+
+// Wrap the page component with a client-side only wrapper
+const ProfilePageWrapper = dynamic(() => Promise.resolve(() => {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+  const router = useRouter();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  return <ProfileContent session={session} />;
+}), { ssr: false });
+
+export default function ProfilePage() {
+  return <ProfilePageWrapper />;
 } 

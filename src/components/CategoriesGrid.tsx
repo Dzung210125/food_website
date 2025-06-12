@@ -4,34 +4,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './CategoriesGrid.module.css';
 
-const categories = [
-  {
-    id: 1,
-    name: 'Men',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/resf0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0fr.jpg',
-    link: '/men'
-  },
-  {
-    id: 2,
-    name: 'Women',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/resf0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0fr.jpg',
-    link: '/women'
-  },
-  {
-    id: 3,
-    name: 'Kids',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/resf0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0fr.jpg',
-    link: '/kids'
-  },
-  {
-    id: 4,
-    name: 'Baby',
-    imageUrl: 'https://im.uniqlo.com/global-cms/spa/resf0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0fr.jpg',
-    link: '/baby'
-  }
-];
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+  link: string;
+}
 
-export default function CategoriesGrid() {
+interface CategoriesGridProps {
+  categories: Category[];
+}
+
+export default function CategoriesGrid({ categories }: CategoriesGridProps) {
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>Shop by Category</h2>
@@ -40,7 +24,7 @@ export default function CategoriesGrid() {
           <Link key={category.id} href={category.link} className={styles.category}>
             <div className={styles.imageWrapper}>
               <Image
-                src={category.imageUrl}
+                src={category.image}
                 alt={category.name}
                 fill
                 className={styles.image}

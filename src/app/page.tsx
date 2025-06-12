@@ -1,8 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
 import ProductCarousel from '@/components/ProductCarousel';
 import LifeWearSection from '@/components/LifeWearSection';
 import CategoriesGrid from '@/components/CategoriesGrid';
@@ -100,8 +97,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <HeroSection />
-      <CategoriesGrid />
-      <FeaturedCollections />
+      <CategoriesGrid categories={categories} />
+      <FeaturedCollections products={featuredProducts} />
       <LifeWearSection />
       <UVProtectionSection />
       <AppBanner />
